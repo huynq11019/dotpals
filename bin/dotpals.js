@@ -78,7 +78,8 @@ function startApp(extra = []) {
   mkdirSync(home(), { recursive: true });
   const log = openSync(logFile, existsSync(logFile) && statSync(logFile).size > 500_000 ? 'w' : 'a');
   writeSync(log, `--- ${new Date().toLocaleString()}: starting dotpals ${version} ${extra.join(' ')}\n`);
-  spawn(electron, [main, ...extra], { detached: true, stdio: ['ignore', log, log], env }).unref();
+  const args = process.platform === 'linux' ? ['--no-sandbox', '--ozone-platform=x11', main, ...extra] : [main, ...extra];
+  spawn(electron, args, { detached: true, stdio: ['ignore', log, log], env }).unref();
   closeSync(log);
   return true;
 }
