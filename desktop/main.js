@@ -202,7 +202,7 @@ if (!app.requestSingleInstanceLock()) {
       },
     });
     // Stay above full-screen editors too.
-    win.setAlwaysOnTop(true, 'floating');
+    win.setAlwaysOnTop(true, 'screen-saver');
     win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
 
     // Links (files → your editor, URLs → your browser) open outside the widget.
@@ -357,6 +357,13 @@ if (!app.requestSingleInstanceLock()) {
   /** Clicks go through the notch window except over the island itself. */
   function syncNotchMouse(p) {
     if (!notch || notch.isDestroyed()) return;
+    if (process.platform === 'linux') {
+      if (notchSolid !== true) {
+        notchSolid = true;
+        try { notch.setIgnoreMouseEvents(false); } catch {}
+      }
+      return;
+    }
     const a = notchArea();
     const cx = a.x + a.width / 2;
     const solid = !!notchIsland && notch.isVisible()
@@ -498,6 +505,13 @@ if (!app.requestSingleInstanceLock()) {
   });
   function syncPalMouse(p) {
     if (!win || win.isDestroyed()) return;
+    if (process.platform === 'linux') {
+      if (palSolid !== true) {
+        palSolid = true;
+        try { win.setIgnoreMouseEvents(false); } catch {}
+      }
+      return;
+    }
     let solid = true;
     if (prefs.compact && palAreas && win.isVisible() && !drag) {
       const b = win.getContentBounds();

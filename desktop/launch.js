@@ -61,7 +61,8 @@ export function launchFloat(electron = findElectron(), { app = root } = {}) {
   if (!electron) return false;
   const env = { ...process.env };
   delete env.ELECTRON_RUN_AS_NODE;
-  spawn(electron, [join(app, 'desktop', 'main.js')], { detached: true, stdio: 'ignore', env }).unref();
+  const args = process.platform === 'linux' ? ['--no-sandbox', '--ozone-platform=x11', join(app, 'desktop', 'main.js')] : [join(app, 'desktop', 'main.js')];
+  spawn(electron, args, { detached: true, stdio: 'ignore', env }).unref();
   return true;
 }
 
